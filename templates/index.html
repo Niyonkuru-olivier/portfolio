@@ -10,54 +10,62 @@
     <script defer src="/static/app.js"></script>
     
     <script>
-        document.getElementById('contactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            const messageDisplay = document.getElementById('messageDisplay');
-            const messageContent = document.getElementById('messageContent');
-            
-            try {
-                const response = await fetch('/api/send_email', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        message: message
-                    })
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const message = document.getElementById('message').value;
+                    const messageDisplay = document.getElementById('messageDisplay');
+                    const messageContent = document.getElementById('messageContent');
+                    
+                    try {
+                        const response = await fetch('/api/send_email', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                name: name,
+                                email: email,
+                                message: message
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            messageContent.textContent = '✅ ' + result.message;
+                            messageContent.style.backgroundColor = 'green';
+                            document.getElementById('contactForm').reset();
+                        } else {
+                            messageContent.textContent = '❌ ' + result.message;
+                            messageContent.style.backgroundColor = 'red';
+                        }
+                        
+                        messageDisplay.style.display = 'block';
+                        
+                        // Hide message after 5 seconds
+                        setTimeout(() => {
+                            messageDisplay.style.display = 'none';
+                        }, 5000);
+                        
+                    } catch (error) {
+                        console.error('Error:', error);
+                        messageContent.textContent = '❌ Error sending message. Please try again later.';
+                        messageContent.style.backgroundColor = 'red';
+                        messageDisplay.style.display = 'block';
+                        
+                        setTimeout(() => {
+                            messageDisplay.style.display = 'none';
+                        }, 5000);
+                    }
                 });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    messageContent.textContent = '✅ ' + result.message;
-                    messageContent.style.backgroundColor = 'green';
-                    document.getElementById('contactForm').reset();
-                } else {
-                    messageContent.textContent = '❌ ' + result.message;
-                    messageContent.style.backgroundColor = 'red';
-                }
-                
-                messageDisplay.style.display = 'block';
-                
-                // Hide message after 5 seconds
-                setTimeout(() => {
-                    messageDisplay.style.display = 'none';
-                }, 5000);
-                
-            } catch (error) {
-                messageContent.textContent = '❌ Error sending message. Please try again later.';
-                messageContent.style.backgroundColor = 'red';
-                messageDisplay.style.display = 'block';
-                
-                setTimeout(() => {
-                    messageDisplay.style.display = 'none';
-                }, 5000);
+            } else {
+                console.error('Contact form not found');
             }
         });
     </script>
@@ -117,26 +125,26 @@
             </div>
 
             <div class="interest-bottom">
-                <div class="interest-item" style="background-image: url(./img/sports-background.jpg);">
-                    <div class="icon"><img src="static/img/ball.png" alt="Soccer ball icon"/></div>
+                <div class="interest-item" style="background-image: url(/static/img/sports-background.jpg);">
+                    <div class="icon"><img src="/static/img/ball.png" alt="Soccer ball icon"/></div>
                     <h2>Soccer</h2>
                     <p>I’ve been playing soccer since a young age as I find it the best way to stay active while nurturing friendships and teamwork.</p>
                 </div>
 
-                <div class="interest-item" style="background-image: url(./img/ghost.jpg);">
-                    <div class="icon"><img src="static/img/video.png" alt="Video game controller icon"/></div>
+                <div class="interest-item" style="background-image: url(/static/img/ghost.jpg);">
+                    <div class="icon"><img src="/static/img/video.png" alt="Video game controller icon"/></div>
                     <h2>Video Games</h2>
                     <p>Video games are a fun way to take a break from studies. I enjoy both single-player adventures and online multiplayer games with friends.</p>
                 </div>
 
-                <div class="interest-item" style="background-image: url(./img/programming-background.jpg);">
-                    <div class="icon"><img src="static/img/programming.png" alt="Programming icon"/></div>
+                <div class="interest-item" style="background-image: url(/static/img/programming-background.jpg);">
+                    <div class="icon"><img src="/static/img/programming.png" alt="Programming icon"/></div>
                     <h2>Programming</h2>
                     <p>Since creating my first website in grade 10, I’ve been passionate about programming. Despite challenges, the satisfaction of solving problems drives me.</p>
                 </div>
 
-                <div class="interest-item" style="background-image: url(./img/Tommys3.jpg);">
-                    <div class="icon"><img src="static/img/icons8-tv-show-500.png" alt="TV icon"/></div>
+                <div class="interest-item" style="background-image: url(/static/img/Tommys3.jpg);">
+                    <div class="icon"><img src="/static/img/icons8-tv-show-500.png" alt="TV icon"/></div>
                     <h2>Shows</h2>
                     <p>I enjoy watching shows on Netflix and Crunchyroll, especially during breaks. Recently, I’ve enjoyed Prison Break and Peaky Blinders.</p>
                 </div>
@@ -162,7 +170,7 @@
                         <a class="link" href="https://ikiraro-agri.netlify.app/" target="_blank">View Project</a>
                     </div>
                     <div class="project-img">
-                        <img class="resize-image" src="static/img/ikiraro.png" alt="IKIRARO Project">
+                        <img class="resize-image" src="/static/img/ikiraro.png" alt="IKIRARO Project">
                     </div>
                 </div>
 
@@ -175,7 +183,7 @@
                         <a class="link" href="https://weather.com/en-RW/weather/today/l/RWXX0001:1:RW" target="_blank">View Project</a>
                     </div>
                     <div class="project-img">
-                        <img class="resize-image" src="static/img/weather.png" alt="Weather App">
+                        <img class="resize-image" src="/static/img/weather.png" alt="Weather App">
                     </div>
                 </div>
 
@@ -188,7 +196,7 @@
                         <a class="link" href="https://www.uplus.rw/" target="_blank">View Project</a>
                     </div>
                     <div class="project-img">
-                        <img class="resize-image" src="static/img/plus.png" alt="E-commerce Project">
+                        <img class="resize-image" src="/static/img/plus.png" alt="E-commerce Project">
                     </div>
                 </div>
 
@@ -201,7 +209,7 @@
                         <a class="link" href="index.html" target="_blank">View Project</a>
                     </div>
                     <div class="project-img">
-                        <img class="resize-image" src="static/img/image.png" alt="Portfolio Project">
+                        <img class="resize-image" src="/static/img/image.png" alt="Portfolio Project">
                     </div>
                 </div>
 
@@ -215,7 +223,7 @@
         <div class="about container">
             <div class="col-left">
                 <div class="about-img">
-                    <img src="static/img/konde.jpg" alt="Image of Olivier">
+                    <img src="/static/img/konde.jpg" alt="Image of Olivier">
                 </div>
             </div>
             <div class="col-right">
@@ -240,7 +248,7 @@
 
             <div class="contact-items">
                 <div class="contact-item">
-                    <div class="icon"> <img src="static/img/phone.png" alt="Phone Icon"/> </div>
+                    <div class="icon"> <img src="/static/img/phone.png" alt="Phone Icon"/> </div>
                     <div class="contact-info">
                         <h1>Phone</h1>
                         <h2>(+250) 781-429-742</h2>
@@ -248,7 +256,7 @@
                 </div>
 
                 <div class="contact-item">
-                    <div class="icon"> <img src="static/img/email.png" alt="Email Icon"/> </div>
+                    <div class="icon"> <img src="/static/img/email.png" alt="Email Icon"/> </div>
                     <div class="contact-info">
                         <h1>Email</h1>
                         <h2>oniyonkuru233@gmail.com</h2>
@@ -257,7 +265,7 @@
                 </div>
 
                 <div class="contact-item">
-                    <div class="icon"> <img src="static/img/address.png" alt="Address Icon"/> </div>
+                    <div class="icon"> <img src="/static/img/address.png" alt="Address Icon"/> </div>
                     <div class="contact-info">
                         <h1>Address</h1>
                         <h2>Kigali, Rwanda</h2>
@@ -291,17 +299,17 @@
             <div class="social-icon">
                 <div class="social-item">
                     <a href="https://github.com/Niyonkuru-olivier" target="_blank">
-                        <img src="static/img/github.png" alt="GitHub Icon">
+                        <img src="/static/img/github.png" alt="GitHub Icon">
                     </a>
                 </div>
                 <div class="social-item">
                     <a href="https://www.linkedin.com/in/niyonkuru-olivier-3195ba286" target="_blank">
-                        <img src="static/img/linkedin.png" alt="LinkedIn Icon">
+                        <img src="/static/img/linkedin.png" alt="LinkedIn Icon">
                     </a>
                 </div>
                 <div class="social-item">
                     <a href="https://www.instagram.com/nikonde" target="_blank">
-                        <img src="static/img/instagram.png" alt="Instagram Icon">
+                        <img src="/static/img/instagram.png" alt="Instagram Icon">
                     </a>
                 </div>
             </div>
