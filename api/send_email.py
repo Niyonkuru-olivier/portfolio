@@ -90,8 +90,8 @@ Your message:
 
 Best regards,
 Olivier Niyonkuru
-Computer and Software Engineering Student
-University of Rwanda
+ProfessionalSoftware Engineer
+
 
 ---
 This is an automated confirmation email. Please do not reply to this message.
