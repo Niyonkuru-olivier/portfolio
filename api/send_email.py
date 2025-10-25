@@ -6,11 +6,22 @@ from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 
-@app.route('/api/send_email', methods=['POST'])
+@app.route('/api/send_email', methods=['POST', 'OPTIONS'])
 def send_email():
+    # Handle CORS preflight requests
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response
+    
     try:
         # Get form data
         data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': 'No data provided'}), 400
+            
         name = data.get('name')
         sender_email = data.get('email')
         message_content = data.get('message')
@@ -54,11 +65,15 @@ Message:
         server.sendmail(email_user, email_user, text)
         server.quit()
         
-        return jsonify({'success': True, 'message': 'Message sent successfully!'})
+        response = jsonify({'success': True, 'message': 'Message sent successfully!'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
         
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({'success': False, 'message': 'Error sending message. Please try again later.'}), 500
+        response = jsonify({'success': False, 'message': 'Error sending message. Please try again later.'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
 
 if __name__ == '__main__':
     app.run(debug=True)

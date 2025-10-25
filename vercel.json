@@ -19,10 +19,5 @@
       "src": "/(.*)",
       "dest": "app.py"
     }
-  ],
-  "env": {
-    "EMAIL_USER": "@email_user",
-    "EMAIL_PASSWORD": "@email_password",
-    "SECRET_KEY": "@secret_key"
-  }
+  ]
 }
