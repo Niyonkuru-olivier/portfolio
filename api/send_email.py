@@ -39,13 +39,18 @@ def send_email():
         if not email_user or not email_password:
             return jsonify({'success': False, 'message': 'Email configuration not found'}), 500
         
-        # Create message
-        msg = MIMEMultipart()
-        msg['From'] = email_user
-        msg['To'] = email_user
-        msg['Subject'] = f"New Message from {name}"
+        # Create SMTP connection
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(email_user, email_password)
         
-        body = f"""
+        # 1. Send notification email to portfolio owner (you)
+        owner_msg = MIMEMultipart()
+        owner_msg['From'] = email_user
+        owner_msg['To'] = email_user
+        owner_msg['Subject'] = f"New Message from {name} - Portfolio Contact Form"
+        
+        owner_body = f"""
 You have received a new message from your portfolio contact form:
 
 Name: {name}
@@ -53,24 +58,67 @@ Email: {sender_email}
 
 Message:
 {message_content}
+
+---
+This message was sent from your portfolio contact form.
+Reply directly to this email to respond to {name}.
 """
         
-        msg.attach(MIMEText(body, 'plain'))
+        owner_msg.attach(MIMEText(owner_body, 'plain'))
+        server.sendmail(email_user, email_user, owner_msg.as_string())
         
-        # Send email
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(email_user, email_password)
-        text = msg.as_string()
-        server.sendmail(email_user, email_user, text)
+        # 2. Send auto-reply confirmation email to the user
+        user_msg = MIMEMultipart()
+        user_msg['From'] = email_user
+        user_msg['To'] = sender_email
+        user_msg['Subject'] = "Thank you for contacting Olivier Niyonkuru"
+        
+        user_body = f"""
+Dear {name},
+
+Thank you for reaching out to me through my portfolio contact form!
+
+I have received your message and will get back to you as soon as possible. I appreciate you taking the time to contact me.
+
+Your message:
+"{message_content}"
+
+Best regards,
+Olivier Niyonkuru
+Computer and Software Engineering Student
+University of Rwanda
+
+---
+This is an automated confirmation email. Please do not reply to this message.
+If you need to send additional information, please use the contact form on my portfolio.
+"""
+        
+        user_msg.attach(MIMEText(user_body, 'plain'))
+        server.sendmail(email_user, sender_email, user_msg.as_string())
+        
         server.quit()
         
-        response = jsonify({'success': True, 'message': 'Message sent successfully!'})
+        response = jsonify({'success': True, 'message': 'Message sent successfully! You will receive a confirmation email shortly.'})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
         
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"SMTP Authentication Error: {e}")
+        response = jsonify({'success': False, 'message': 'Email authentication failed. Please contact the administrator.'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
+    except smtplib.SMTPRecipientsRefused as e:
+        print(f"SMTP Recipients Refused: {e}")
+        response = jsonify({'success': False, 'message': 'Invalid email address. Please check your email and try again.'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 400
+    except smtplib.SMTPServerDisconnected as e:
+        print(f"SMTP Server Disconnected: {e}")
+        response = jsonify({'success': False, 'message': 'Email server connection failed. Please try again later.'})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 500
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Unexpected Error: {e}")
         response = jsonify({'success': False, 'message': 'Error sending message. Please try again later.'})
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 500
